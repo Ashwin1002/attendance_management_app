@@ -1,9 +1,10 @@
 import 'package:attendance_app/login_form.dart';
+import 'package:attendance_app/widgets/attendance_list.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key? key, required String username}) : super(key: key);
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -13,15 +14,17 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Home'),
+        title: const Text('Home Page'),
+        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              padding: EdgeInsets.all(10),
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   border: Border.all(
                       color: Colors.grey.withOpacity(0.5), width: 1)),
@@ -131,45 +134,48 @@ class _HomeState extends State<Home> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10),
-                    padding: EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.grey.withOpacity(0.4), width: 1)),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.people,
-                          size: 60,
-                          color: Colors.green,
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Text(
-                          'Attendance',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                  child: InkWell(
+                    onTap: showAttendanceList,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Colors.grey.withOpacity(0.4), width: 1)),
+                      child: Column(
+                        children: const [
+                           Icon(
+                            Icons.people,
+                            size: 60,
+                            color: Colors.green,
+                          ),
+                           SizedBox(
+                            height: 15,
+                          ),
+                           Text(
+                            'Attendance',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 Expanded(
                   flex: 1,
                   child: InkWell(
-                    onTap: SignOut,
+                    onTap: signOut,
                     child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 10),
-                      padding: EdgeInsets.all(20),
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                           border: Border.all(
                               color: Colors.grey.withOpacity(0.4), width: 1)),
                       child: Column(
-                        children: [
+                        children: const [
                           Icon(
                             Icons.logout,
                             size: 60,
@@ -198,10 +204,16 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void SignOut() async {
+  void signOut() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.remove('username');
+    // ignore: use_build_context_synchronously
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext ctx) => LoginScreen()));
+  }
+
+  void showAttendanceList() async {
+    Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext ctx) => AttendanceList()));
   }
 }
