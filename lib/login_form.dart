@@ -26,20 +26,19 @@ class _Login extends State<LoginScreen> {
   String comp = "ES25";
 
 
-  /*@override
+  @override
   void initState() {
-    loginUser().whenComplete(() async {
-      Navigator.push(context, MaterialPageRoute(
-          builder: (context) => finalUsername == null ? LoginScreen() : Home()));
-    });
+    main();
     super.initState();
-  }*/
+  }
 
-  Future loginUser() async {
+  Future main() async {
+    WidgetsFlutterBinding.ensureInitialized();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var savedUsername = prefs.getString('username');
     setState(() {
       finalUsername = savedUsername;
+      runApp(MaterialApp(home: savedUsername == null ? LoginScreen() : Home()));
     });
     print(finalUsername);
   }
@@ -172,7 +171,7 @@ class _Login extends State<LoginScreen> {
                             const SnackBar(content: Text('Login Successful')),
                           );
                           // ignore: use_build_context_synchronously
-                          Navigator.push(context, MaterialPageRoute(
+                          Navigator.pushReplacement(context, MaterialPageRoute(
                               builder: (context) => const Home()));
                         }
                       },

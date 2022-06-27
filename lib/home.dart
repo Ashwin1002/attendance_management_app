@@ -207,6 +207,9 @@ class _HomeState extends State<Home> {
   void signOut() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.remove('username');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Logout Successfully')),
+    );
     // ignore: use_build_context_synchronously
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (BuildContext ctx) => LoginScreen()));
