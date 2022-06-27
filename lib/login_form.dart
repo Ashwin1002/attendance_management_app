@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'home.dart';
+
+String? finalUsername;
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -21,35 +25,22 @@ class _Login extends State<LoginScreen> {
   String pass = "password";
   String comp = "ES25";
 
+
   @override
   void initState() {
+    main();
     super.initState();
-    autoLogIn();
   }
 
-  void autoLogIn() async {
-    final SharedPreferences preferences = await SharedPreferences.getInstance();
-    final String? userId = preferences.getString('username');
-
-    if (userId != null) {
-      setState(() {
-        isLoggedIn = true;
-        uname = userId;
-      });
-      return;
-    }
-  }
-
-  Future<Null> loginUser() async {
+  Future main() async {
+    WidgetsFlutterBinding.ensureInitialized();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('username', unameController.text);
-
+    var savedUsername = prefs.getString('username');
     setState(() {
-      uname = unameController.text;
-      isLoggedIn = true;
+      finalUsername = savedUsername;
+      runApp(MaterialApp(home: savedUsername == null ? LoginScreen() : Home()));
     });
-
-    unameController.clear();
+    print(finalUsername);
   }
 
   @override
@@ -170,22 +161,18 @@ class _Login extends State<LoginScreen> {
                       border: Border.all(width: 1, color: Colors.black)
                   ),
                   child: TextButton(
-                      onPressed: () {
+                      onPressed: () async{
+                        final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                        sharedPreferences.setString('username', unameController.text);
                         // Validate returns true if the form is valid, or false otherwise.
                         if (_formKey.currentState!.validate()) {
-                          // If the form is valid, display a snackbar. In the real world,
-                          // you'd often call a server or save the information in a database.
+                          // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
+                            const SnackBar(content: Text('Login Successful')),
                           );
-                        }
-                        if (uname == unameController.text &&
-                            pass == passController.text && comp == compController.text) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Home(username: "Hello World from Login")));
+                          // ignore: use_build_context_synchronously
+                          Navigator.pushReplacement(context, MaterialPageRoute(
+                              builder: (context) => const Home()));
                         }
                       },
                       child: const Text('Login', style: TextStyle(
